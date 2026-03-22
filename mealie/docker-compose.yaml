@@ -1,0 +1,43 @@
+services:
+  mealie:
+    image: ghcr.io/mealie-recipes/mealie:nightly
+    container_name: mealiev1
+    restart: always
+    ports:
+      - '3030:9000'
+    volumes:
+      - /mnt/user/appdata/mealiev1:/app/data
+    environment:
+      # Static Config
+      - ALLOW_SIGNUP=false
+      - BASE_URL=https://meals.kellenwiltshire.com
+      - DEFAULT_GROUP=home
+      - DEFAULT_EMAIL=kellenwiltshirewebdev@gmail.com
+      - DB_ENGINE=sqlite
+      - WEB_CONCURRENCY=1
+      - MAX_WORKERS=1
+      - APP_PORT=9000
+      - HOST=0.0.0.0
+      - HOST_HOSTNAME=MediaCentre
+      - HOST_CONTAINERNAME=mealiev1
+      - HOST_OS=Unraid
+      # Variables Pulled from .env
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - SMTP_HOST=smtp.gmail.com
+      - SMTP_PORT=587
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      - SMTP_FROM_EMAIL=${SMTP_FROM_EMAIL}
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '50m'
+        max-file: '1'
+    healthcheck:
+      test: ['CMD-SHELL', '$$MEALIE_HOME/healthcheck.sh']
+      interval: 30s
+      timeout: 10s
+      retries: 3

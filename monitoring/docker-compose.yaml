@@ -1,0 +1,50 @@
+name: monitoring
+
+services:
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    container_name: homepage
+    ports:
+      - 3000:3000
+    volumes:
+      - /mnt/cache/appdata/homepage:/app/config
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      HOMEPAGE_ALLOWED_HOSTS: 192.168.1.234:3000,100.109.91.64:3000,localhost:3000
+
+  tautulli:
+    image: ghcr.io/tautulli/tautulli
+    container_name: tautulli
+    restart: unless-stopped
+    volumes:
+      - /mnt/cache/appdata/tautulli:/config
+    environment:
+      - PUID=99
+      - PGID=100
+      - TZ=America/Toronto
+    ports:
+      - 8181:8181
+
+  uptime-kuma:
+    image: louislam/uptime-kuma:latest
+    container_name: UptimeKuma
+    restart: unless-stopped
+    ports:
+      - '3001:3001'
+    volumes:
+      - '/mnt/cache/appdata/uptimekuma:/app/data'
+      - '/var/run/docker.sock:/var/run/docker.sock:ro'
+    environment:
+      - TZ=America/New_York
+      - UPTIME_KUMA_IS_CONTAINER=1
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '50m'
+        max-file: '1'
+    healthcheck:
+      test: ['CMD-SHELL', 'extra/healthcheck']
+      interval: 60s
+      timeout: 30s
+      retries: 5
+      start_period: 180s
