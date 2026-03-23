@@ -1,0 +1,30 @@
+version: '3.8'
+
+networks:
+  media-centre-network:
+    external: true
+    name: media-centre-network
+
+services:
+  plex:
+    image: plexinc/pms-docker:latest
+    container_name: Plex-Media-Server
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      - PLEX_CLAIM=${PLEX_CLAIM}
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - VERSION=latest
+      - HOST_OS=Unraid
+      - CHANGE_CONFIG_DIR_OWNERSHIP=true
+    volumes:
+      - /mnt/cache/appdata/Plex-Media-Server:/config:rw
+      - /mnt/user/data/media:/data:rw
+      - /mnt/cache/appdata/plex_transcode:/transcode:rw
+    healthcheck:
+      test: ['CMD-SHELL', '/healthcheck.sh || exit 1']
+      interval: 5s
+      timeout: 2s
+      retries: 20

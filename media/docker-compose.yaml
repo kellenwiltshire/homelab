@@ -1,0 +1,91 @@
+version: '3.8'
+
+networks:
+  media-centre-network:
+    external: true
+    name: media-centre-network
+
+services:
+  qbittorrent:
+    image: binhex/arch-qbittorrentvpn:latest
+    container_name: binhex-qbittorrentvpn
+    restart: unless-stopped
+    networks:
+      - media-centre-network
+    ports:
+      - '8080:8080'
+      - '8118:8118'
+      - '9118:9118'
+      - '58946:58946'
+      - '58946:58946/udp'
+    privileged: true
+    sysctls:
+      - net.ipv4.conf.all.src_valid_mark=1
+    environment:
+      - VPN_ENABLED=yes
+      - VPN_PROV=pia
+      - VPN_CLIENT=wireguard
+      - VPN_USER=${VPN_USER}
+      - VPN_PASS=${VPN_PASS}
+      - STRICT_PORT_FORWARD=yes
+      - LAN_NETWORK=${LAN_NETWORK}
+      - NAME_SERVERS=84.200.69.80,37.235.1.174,1.1.1.1,37.235.1.177,84.200.70.40,1.0.0.1
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - UMASK=000
+    volumes:
+      - /mnt/cache/appdata/binhex-qbittorrentvpn:/config
+      - /mnt/user/data/torrents:/data
+    security_opt:
+      - label:disable
+
+  seerr:
+    image: ghcr.io/seerr-team/seerr:latest
+    container_name: Seerr
+    restart: unless-stopped
+    networks:
+      - media-centre-network
+    ports:
+      - '5056:5055'
+    user: '${PUID}:${PGID}'
+    environment:
+      - TZ=${TZ}
+      - LOG_LEVEL=debug
+      - PORT=5055
+      - HOST_OS=Unraid
+    volumes:
+      - /mnt/user/appdata/seerr:/app/config:rw
+      - /mnt/user/appdata/seerr/logs:/app/config/logs:rw
+
+  sonarr:
+    image: binhex/arch-sonarr:latest
+    container_name: Sonarr
+    restart: unless-stopped
+    networks:
+      - media-centre-network
+    ports:
+      - '8989:8989'
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - /mnt/user/appdata/sonarr:/config
+      - /mnt/user/data:/data
+
+  radarr:
+    image: binhex/arch-radarr:latest
+    container_name: binhex-radarr
+    restart: unless-stopped
+    networks:
+      - media-centre-network
+    ports:
+      - '7878:7878'
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - /mnt/user/appdata/radarr:/config
+      - /mnt/user/data:/data

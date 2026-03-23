@@ -1,3 +1,10 @@
+version: '3.8'
+
+networks:
+  media-centre-network:
+    external: true
+    name: media-centre-network
+
 services:
   mealie:
     image: ghcr.io/mealie-recipes/mealie:nightly
@@ -10,9 +17,9 @@ services:
     environment:
       # Static Config
       - ALLOW_SIGNUP=false
-      - BASE_URL=https://meals.kellenwiltshire.com
+      - BASE_URL={BASE_URL}
       - DEFAULT_GROUP=home
-      - DEFAULT_EMAIL=kellenwiltshirewebdev@gmail.com
+      - DEFAULT_EMAIL={DEFAULT_EMAIL}
       - DB_ENGINE=sqlite
       - WEB_CONCURRENCY=1
       - MAX_WORKERS=1
@@ -31,6 +38,8 @@ services:
       - SMTP_USER=${SMTP_USER}
       - SMTP_PASSWORD=${SMTP_PASSWORD}
       - SMTP_FROM_EMAIL=${SMTP_FROM_EMAIL}
+    networks:
+      - media-centre-network
     logging:
       driver: 'json-file'
       options:

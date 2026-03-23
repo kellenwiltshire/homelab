@@ -1,5 +1,10 @@
 name: monitoring
 
+networks:
+  media-centre-network:
+    external: true
+    name: media-centre-network
+
 services:
   homepage:
     image: ghcr.io/gethomepage/homepage:latest
@@ -9,6 +14,8 @@ services:
     volumes:
       - /mnt/cache/appdata/homepage:/app/config
       - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - media-centre-network
     environment:
       HOMEPAGE_ALLOWED_HOSTS: 192.168.1.234:3000,100.109.91.64:3000,localhost:3000
 
@@ -19,11 +26,13 @@ services:
     volumes:
       - /mnt/cache/appdata/tautulli:/config
     environment:
-      - PUID=99
-      - PGID=100
-      - TZ=America/Toronto
+      - PUID={PUID}
+      - PGID={PGID}
+      - TZ={TZ}
     ports:
       - 8181:8181
+    networks:
+      - media-centre-network
 
   uptime-kuma:
     image: louislam/uptime-kuma:latest
@@ -42,9 +51,32 @@ services:
       options:
         max-size: '50m'
         max-file: '1'
+    networks:
+      - media-centre-network
     healthcheck:
       test: ['CMD-SHELL', 'extra/healthcheck']
       interval: 60s
       timeout: 30s
       retries: 5
       start_period: 180s
+
+  glances:
+    image: nicolargo/glances:latest
+    container_name: Glances
+    restart: unless-stopped
+    pid: host
+    network_mode: bridge
+    ports:
+      - '61208:61208'
+    environment:
+      - GLANCES_OPT=${GLANCES_OPT}
+      - PYTHON_VERSION=${PYTHON_VERSION}
+      - TZ=${TZ}
+      - HOST_OS=Unraid
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /:/rootfs:ro
+      - /etc/os-release:/etc/os-release:ro
+      - /mnt/cache/appdata/glances:/etc/glances:rw
+    security_opt:
+      - label:disable
