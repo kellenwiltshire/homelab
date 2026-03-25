@@ -8,12 +8,12 @@ This repository holds the Docker Infrastructure used in my homelab and is a work
 
 - `monitoring`
 - `immich`
+- `media`
 
 ## Awaiting Deployment
 
 - `maintenance`
 - `mealie`
-- `media`
 - `plex`
 
 ## Missing Docker Compose
