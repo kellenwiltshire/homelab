@@ -1,12 +1,50 @@
-version: '3.8'
-
 networks:
   media-centre-network:
     external: true
     name: media-centre-network
 
 services:
-  # --- INFRASTRUCTURE & DEPENDENCIES ---
+  # --- MAINTENANCE ---
+  cleanuparr:
+    image: ghcr.io/cleanuparr/cleanuparr:latest
+    container_name: Cleanuparr
+    networks:
+      - media-centre-network
+    ports:
+      - '11011:11011'
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - PORT=11011
+      - HTTP_PORTS=11011
+    volumes:
+      - ${APPDATA_PATH}/Cleanuparr:/config
+      - ${TORRENTS_PATH}:/downloads
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:11011/health']
+      interval: 30s # Check every 30 seconds
+      timeout: 10s # Allow up to 10 seconds for response
+      start_period: 30s # Wait 30 seconds before first check
+      retries: 3 # Mark unhealthy after 3 consecutive failures
+
+  maintainerr:
+    image: ghcr.io/maintainerr/maintainerr:latest
+    container_name: Maintainerr
+    networks:
+      - media-centre-network
+    ports:
+      - '6246:6246'
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${APPDATA_PATH}/maintainerr:/config
+    restart: unless-stopped
+
+  # IFRASTRUCTURE & DEPENDENCIES
   cloudflared:
     image: cloudflare/cloudflared:latest
     container_name: CloudflaredTunnel
@@ -39,14 +77,15 @@ services:
       retries: 3
       start_period: 30s
 
-  # --- INDEXING & SEARCH ---
+  # --- INDEXING ---
+
   prowlarr:
     image: lscr.io/linuxserver/prowlarr:latest
     container_name: Prowlarr
     networks:
       - media-centre-network
     ports:
-      - '9696:9696'
+      - '9697:9696'
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
@@ -58,106 +97,8 @@ services:
       flaresolverr:
         condition: service_healthy
     healthcheck:
-      test: ['CMD', 'wget', '--no-verbose', '--tries=1', '--spider', 'http://localhost:9696/ping']
+      test: ['CMD', 'curl', '-f', 'http://localhost:9696/']
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
-
-  # --- CONTENT MANAGEMENT ---
-  huntarr:
-    image: huntarr/huntarr:latest
-    container_name: Huntarr
-    networks:
-      - media-centre-network
-    ports:
-      - '9705:9705'
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
-    volumes:
-      - ${APPDATA_PATH}/Huntarr:/config
-    restart: unless-stopped
-    depends_on:
-      prowlarr:
-        condition: service_healthy
-    healthcheck:
-      test:
-        [
-          'CMD',
-          'python3',
-          '-c',
-          "import requests; import sys; r = requests.get('http://localhost:9705/api/health', timeout=5); sys.exit(0 if r.status_code == 200 else 1)",
-        ]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
-
-  agregarr:
-    image: agregarr/agregarr:latest
-    container_name: Agregarr
-    networks:
-      - media-centre-network
-    ports:
-      - '7171:7171'
-    environment:
-      - TZ=${TZ}
-      - HOST_OS=Unraid
-      - PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
-      - PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium
-    volumes:
-      - ${APPDATA_PATH}/:/app/config:rw
-      - ${MOVIES_PATH}:/data/media/movies:rw
-    restart: unless-stopped
-    healthcheck:
-      test: ['CMD', 'wget', '--no-verbose', '--tries=1', '--spider', 'http://localhost:7171/']
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 60s
-
-  # --- MAINTENANCE ---
-  cleanuparr:
-    image: ghcr.io/cleanuparr/cleanuparr:latest
-    container_name: Cleanuparr
-    networks:
-      - media-centre-network
-    ports:
-      - '11011:11011'
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
-      - PORT=11011
-      - HTTP_PORTS=11011
-    volumes:
-      - ${APPDATA_PATH}/Cleanuparr:/config
-      - ${TORRENTS_PATH}:/downloads
-    restart: unless-stopped
-    healthcheck:
-      test: ['CMD', 'wget', '--no-verbose', '--tries=1', '--spider', 'http://localhost:11011/health']
-      interval: 60s
-      timeout: 10s
-      retries: 3
-
-  maintainerr:
-    image: jorenn92/maintainerr:latest
-    container_name: Maintainerr
-    networks:
-      - media-centre-network
-    ports:
-      - '6246:6246'
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
-    volumes:
-      - ${APPDATA_PATH}/maintainerr:/config
-    restart: unless-stopped
-    healthcheck:
-      test: ['CMD', 'wget', '--no-verbose', '--tries=1', '--spider', 'http://localhost:6246/api/health']
-      interval: 60s
-      timeout: 10s
-      retries: 3

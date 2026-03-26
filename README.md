@@ -9,10 +9,10 @@ This repository holds the Docker Infrastructure used in my homelab and is a work
 - `monitoring`
 - `immich`
 - `media`
+- `maintenance`
 
 ## Awaiting Deployment
 
-- `maintenance`
 - `mealie`
 - `plex`
 
