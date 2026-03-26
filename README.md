@@ -10,11 +10,11 @@ This repository holds the Docker Infrastructure used in my homelab and is a work
 - `immich`
 - `media`
 - `maintenance`
+- `mealie`
 
 ## Awaiting Deployment
 
-- `mealie`
-- `plex`
+- `plex` - May be a while to deploy, worried about having to re-issue user access...
 
 ## Missing Docker Compose
 
