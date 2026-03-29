@@ -8,7 +8,7 @@ networks:
 services:
   plex:
     image: plexinc/pms-docker:latest
-    container_name: Plex-Media-Server
+    container_name: Plex
     restart: unless-stopped
     network_mode: host
     environment:
@@ -20,7 +20,7 @@ services:
       - HOST_OS=Unraid
       - CHANGE_CONFIG_DIR_OWNERSHIP=true
     volumes:
-      - /mnt/cache/appdata/Plex-Media-Server:/config:rw
+      - /mnt/cache/appdata/Plex:/config:rw
       - /mnt/user/data/media:/data:rw
       - /mnt/cache/appdata/plex_transcode:/transcode:rw
     healthcheck:

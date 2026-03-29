@@ -7,16 +7,26 @@ This repository holds the Docker Infrastructure used in my homelab and is a work
 ## Deployed
 
 - `monitoring`
+- - `homepage`
+- - `tautulli`
+- - `uptime-kuma`
+- - `glances`
+- - `netdata`
 - `immich`
 - `media`
+- - `qbittorrent`
+- - `seerr`
+- - `sonarr`
+- - `radarr`
 - `maintenance`
+- - `cleanuparr`
+- - `maintanerr`
+- - `cloudflared`
+- - `flaresolverr`
+- - `prowlarr`
 - `mealie`
-
-## Awaiting Deployment
-
-- `plex` - May be a while to deploy, worried about having to re-issue user access...
+- `plex`
 
 ## Missing Docker Compose
 
-- `Netdata`
 - `homeassistant` - Currently running in a VM, may not be created
