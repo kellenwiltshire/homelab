@@ -1,5 +1,3 @@
-version: '3.8'
-
 networks:
   media-centre-network:
     external: true
@@ -20,11 +18,12 @@ services:
       - HOST_OS=Unraid
       - CHANGE_CONFIG_DIR_OWNERSHIP=true
     volumes:
-      - /mnt/cache/appdata/Plex:/config:rw
+      - /mnt/user/appdata/Plex:/config:rw
       - /mnt/user/data/media:/data:rw
-      - /mnt/cache/appdata/plex_transcode:/transcode:rw
+      - /mnt/user/appdata/plex_transcode:/transcode:rw
     healthcheck:
-      test: ['CMD-SHELL', '/healthcheck.sh || exit 1']
-      interval: 5s
-      timeout: 2s
-      retries: 20
+      test: curl --connect-timeout 15 --silent --show-error --fail http://127.0.0.1:32400/identity
+      interval: 1m00s
+      timeout: 15s
+      retries: 3
+      start_period: 1m00s
