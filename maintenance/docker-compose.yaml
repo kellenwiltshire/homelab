@@ -29,21 +29,6 @@ services:
       start_period: 30s # Wait 30 seconds before first check
       retries: 3 # Mark unhealthy after 3 consecutive failures
 
-  maintainerr:
-    image: ghcr.io/maintainerr/maintainerr:latest
-    container_name: Maintainerr
-    networks:
-      - media-centre-network
-    ports:
-      - '6246:6246'
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
-    volumes:
-      - ${APPDATA_PATH}/maintainerr:/config
-    restart: unless-stopped
-
   # IFRASTRUCTURE & DEPENDENCIES
   cloudflared:
     image: cloudflare/cloudflared:latest

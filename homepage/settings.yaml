@@ -1,0 +1,27 @@
+---
+title: My Dashboard
+useEqualHeights: true
+headerStyle: clean
+layout:
+  Glances:
+    style: row
+    columns: 4
+  Media:
+    style: row
+    columns: 4
+  Automation:
+    style: grid
+    columns: 4
+  Storage:
+    style: grid
+    columns: 4
+  Infrastructure:
+    style: grid
+    columns: 4
+  Utilities:
+    style: grid
+    columns: 4
+
+# Global Settings
+base: http://192.168.1.234:3000
+icon: dashboard

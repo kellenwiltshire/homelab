@@ -81,33 +81,29 @@ services:
     security_opt:
       - label:disable
 
-  netdata:
-    image: netdata/netdata:stable
-    container_name: netdata
-    hostname: MediaCentre
-    restart: unless-stopped
-    network_mode: host
-    pid: host
-    cap_add:
-      - SYS_PTRACE
-      - SYS_ADMIN
-    security_opt:
-      - apparmor:unconfined
-    environment:
-      - NETDATA_CLAIM_TOKEN=${NETDATA_CLAIM_TOKEN}
-      - NETDATA_CLAIM_ROOMS=${NETDATA_ROOM_ID}
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
+  whatsupdocker:
+    image: getwud/wud
+    container_name: WhatsUpDocker
+    networks:
+      - media-centre-network
     volumes:
-      # Config and Data persistence
-      - /mnt/user/appdata/netdata/config:/etc/netdata
-      - /mnt/user/appdata/netdata/lib:/var/lib/netdata
-      - /mnt/user/appdata/netdata/cache:/var/cache/netdata
-      # Host monitoring mounts (Read-Only)
-      - /etc/passwd:/host/etc/passwd:ro
-      - /etc/group:/host/etc/group:ro
-      - /proc:/host/proc:ro
-      - /sys:/host/sys:ro
-      - /etc/os-release:/host/etc/os-release:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - 3002:3000
+    environment:
+      - WUD_TRIGGER_SMTP_GMAIL_HOST=${WUD_TRIGGER_SMTP_GMAIL_HOST}
+      - WUD_TRIGGER_SMTP_GMAIL_PORT=${WUD_TRIGGER_SMTP_GMAIL_PORT}
+      - WUD_TRIGGER_SMTP_GMAIL_USER=${WUD_TRIGGER_SMTP_GMAIL_USER}
+      - WUD_TRIGGER_SMTP_GMAIL_PASS=${WUD_TRIGGER_SMTP_GMAIL_PASS}
+      - WUD_TRIGGER_SMTP_GMAIL_FROM_ADDRESS=${WUD_TRIGGER_SMTP_GMAIL_FROM_ADDRESS}
+      - WUD_TRIGGER_SMTP_GMAIL_FROM_NAME=${WUD_TRIGGER_SMTP_GMAIL_FROM_NAME}
+      - WUD_TRIGGER_SMTP_GMAIL_TO=${WUD_TRIGGER_SMTP_GMAIL_TO}
+      - WUD_TRIGGER_SMTP_GMAIL_SIMPLETITLE=Container $${container.name} can be updated
+      - WUD_TRIGGER_SMTP_GMAIL_SIMPLEBODY=Container $${name} can be updated from $${local.substring(0, 15)} to $${remote.substring(0, 15)}
+      - WUD_WATCHER_LOCAL_CRON=0 0 * * 0
+    healthcheck:
+      test: curl --fail http://localhost:${WUD_SERVER_PORT:-3000}/health || exit 1
+      interval: 10s
+      timeout: 10s
+      retries: 3
+      start_period: 10s

@@ -1,0 +1,158 @@
+---
+# Glances
+- Glances:
+    - Info:
+      widget:
+        type: glances
+        url: http://192.168.1.234:61208/
+        metric: info
+    - CPU Usage:
+      widget:
+        type: glances
+        url: http://192.168.1.234:61208/
+        metric: cpu
+    - Memory:
+      widget:
+        type: glances
+        url: http://192.168.1.234:61208/
+        metric: memory
+    - Processes:
+      widget:
+        type: glances
+        url: http://192.168.1.234:61208/
+        metric: process
+
+# Media Management
+- Media:
+    - Player:
+        - Plex:
+            icon: plex.png
+            href: https://app.plex.tv/desktop/
+            container: Plex
+            widget:
+              type: plex
+              url: http://192.168.1.234:32400
+              key:
+              fields: ['streams', 'movies', 'tv']
+        - Tautulli:
+            icon: tautulli.png
+            href: http://192.168.1.234:8181
+            container: tautulli
+            widget:
+              type: tautulli
+              url: http://192.168.1.234:8181
+              key:
+        - Mealie:
+            icon: mealie.png
+            href: http://192.168.1.234:9925
+            container: mealiev1
+            widget:
+              type: mealie
+              url: https://meals.kellenwiltshire.com
+              key:
+              fields: ['recipes']
+              version: 3
+    - Calendar:
+        -Calendar:
+          widget:
+            type: calendar
+            integrations:
+              - type: sonarr
+                service_group: Automation
+                service_name: Sonarr
+              - type: radarr
+                service_group: Automation
+                service_name: Radarr
+
+# Arr Stack & Downloads
+- Automation:
+    - Sonarr:
+        icon: sonarr.png
+        href: http://192.168.1.234:8989
+        container: Sonarr
+        widget:
+          type: sonarr
+          url: http://192.168.1.234:8989
+          key:
+    - Radarr:
+        icon: radarr.png
+        href: http://192.168.1.234:7878
+        container: binhex-radarr
+        widget:
+          type: radarr
+          url: http://192.168.1.234:7878
+          key:
+    - Prowlarr:
+        icon: prowlarr.png
+        href: http://192.168.1.234:9697
+        container: Prowlarr
+    - qBittorrent:
+        icon: qbittorrent.png
+        href: http://192.168.1.234:8080
+        container: binhex-qbittorrentvpn
+        widget:
+          type: qbittorrent
+          url: http://192.168.1.234:8080
+          username:
+          password:
+    - Seerr:
+        icon: overseerr.png
+        href: http://192.168.1.234:5056
+        container: Seerr
+        widget:
+          type: seerr
+          url: http://192.168.1.234:5056
+          key:
+
+# Photos & Storage
+- Storage:
+    - Immich Server:
+        icon: immich.png
+        href: http://192.168.1.234:2283
+        container: immich_server
+        widget:
+          type: immich
+          url: http://192.168.1.234:2283
+          key:
+          version: 2
+    - Immich ML:
+        icon: immich.png
+        container: immich_machine_learning
+    - Immich Postgres:
+        icon: postgresql.png
+        container: immich_postgres
+    - Immich Redis:
+        icon: redis.png
+        container: immich_redis
+
+# System Administration
+- Infrastructure:
+    - Uptime Kuma:
+        icon: uptime-kuma.png
+        href: http://192.168.1.234:3001
+        container: UptimeKuma
+        widget:
+          type: uptimekuma
+          url: http://192.168.1.234:3001
+    - Cloudflared:
+        icon: cloudflare.png
+        container: CloudflaredTunnel
+    - What's Up Docker:
+        icon: docker.png
+        href: http://192.168.1.234:3002
+        container: WhatsUpDocker
+        widget:
+          type: whatsupdocker
+          url: http://192.168.1.234:3002
+    - PlexCache-D:
+        icon: plex.png
+        container: plexcache-d
+
+# Utilities
+- Utilities:
+    - Cleanuparr:
+        icon: trash-can.png
+        container: Cleanuparr
+    - Flaresolverr:
+        icon: flaresolverr.png
+        container: Flaresolver
